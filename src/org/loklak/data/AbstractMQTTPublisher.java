@@ -1,5 +1,6 @@
 package org.loklak.data;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jetty.util.log.Log;
@@ -7,6 +8,11 @@ import net.sf.xenqtt.client.AsyncMqttClient;
 import net.sf.xenqtt.message.ConnectReturnCode;
 import org.loklak.objects.MessageEntry;
 import net.sf.xenqtt.client.PublishMessage;
+import net.sf.xenqtt.client.AsyncClientListener;
+import net.sf.xenqtt.client.MqttClient;
+import net.sf.xenqtt.client.Subscription;
+import net.sf.xenqtt.message.QoS;
+
 
 public abstract class AbstractMQTTPublisher {
 
@@ -29,7 +35,7 @@ public abstract class AbstractMQTTPublisher {
             @Override
             public void disconnected(MqttClient client, Throwable cause, boolean reconnecting) {
                 if (cause != null) {
-                    Log.getLog().error("Disconnected from the broker due to an exception.", cause);
+                    Log.getLog().warn("Disconnected from the broker due to an exception.", cause);
                 } else {
                     Log.getLog().info("Disconnected from the broker.");
                 }
@@ -59,8 +65,8 @@ public abstract class AbstractMQTTPublisher {
 
         };
 
-        mqttClient = new AsyncMqttClient(url, listener, 5);
-        client.connect();
+        this.mqttClient = new AsyncMqttClient(url, listener, 5);
+        this.mqttClient.connect("loklak_server", false);
 
         // Wait to connect
         connectLatch.wait();
@@ -69,7 +75,7 @@ public abstract class AbstractMQTTPublisher {
         // Verify return code
         if (returnCode == null || returnCode != ConnectReturnCode.ACCEPTED) {
             // The broker bounced us. We are done.
-            Log.getLog().error("The broker rejected our attempt to connect. Reason: " + returnCode);
+            Log.getLog().warn("The broker rejected our attempt to connect. Reason: " + returnCode);
         }
 
         this.status = true;
@@ -89,11 +95,11 @@ public abstract class AbstractMQTTPublisher {
     }
 
     public void publish(MessageEntry message) {
-        String[] channels = this.getChannels(message);
+        ArrayList<String> channels = this.getChannels(message);
         for(String channel: channels) {
-            this.mqttClient.publish(new PublishMessage(chennel, SoS.AT_MOST_ONCE, message.toJSON().toString()));
+            this.mqttClient.publish(new PublishMessage(channel, QoS.AT_MOST_ONCE, message.toJSON().toString()));
         }
     }
 
-    public abstract String[] getChannels(MessageEntry m);
+    public abstract ArrayList<String> getChannels(MessageEntry m);
 }
