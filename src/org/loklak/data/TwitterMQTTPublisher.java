@@ -11,8 +11,14 @@ public class TwitterMQTTPublisher extends AbstractMQTTPublisher {
         super(host, port);
     }
 
+    TwitterMQTTPublisher() throws InterruptedException {
+        this("tcp://127.0.0.1", "1883");
+    }
+
     @Override
     public ArrayList<String> getChannels(MessageEntry m) {
-        return null;
+        ArrayList<String> channels = new ArrayList<>();
+        channels.add("twitter");
+        return channels;
     }
 }
