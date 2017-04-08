@@ -83,7 +83,7 @@ public abstract class AbstractMQTTPublisher {
     }
 
     AbstractMQTTPublisher () throws InterruptedException {
-        this("tcp://127.0.0.1", "1183");
+        this("tcp://127.0.0.1", "1883");
     }
 
     public boolean isReady() {
