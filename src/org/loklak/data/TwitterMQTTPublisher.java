@@ -1,11 +1,11 @@
 package org.loklak.data;
 
+import java.util.ArrayList;
 import org.loklak.objects.MessageEntry;
 
-import java.util.ArrayList;
-
-
 public class TwitterMQTTPublisher extends AbstractMQTTPublisher {
+
+    public static TwitterMQTTPublisher publisher;
 
     TwitterMQTTPublisher(String host, String port) throws InterruptedException {
         super(host, port);
@@ -20,5 +20,13 @@ public class TwitterMQTTPublisher extends AbstractMQTTPublisher {
         ArrayList<String> channels = new ArrayList<>();
         channels.add("twitter");
         return channels;
+    }
+
+    public static void init(String host, String port) throws InterruptedException {
+        publisher = new TwitterMQTTPublisher(host, port);
+    }
+
+    public static void init() throws InterruptedException {
+        publisher = new TwitterMQTTPublisher();
     }
 }

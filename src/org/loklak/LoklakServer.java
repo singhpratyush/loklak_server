@@ -128,6 +128,7 @@ import org.loklak.api.vis.MarkdownServlet;
 import org.loklak.api.vis.PieChartServlet;
 import org.loklak.data.DAO;
 import org.loklak.data.IncomingMessageBuffer;
+import org.loklak.data.TwitterMQTTPublisher;
 import org.loklak.harvester.TwitterScraper;
 import org.loklak.harvester.strategy.ClassicHarvester;
 import org.loklak.harvester.strategy.Harvester;
@@ -277,6 +278,13 @@ public class LoklakServer {
         	Log.getLog().warn(e.getMessage());
         	Log.getLog().warn("Could not initialize DAO. Exiting.");
         	System.exit(-1);
+        }
+
+        // Initialize Twitter Publisher Object
+        try {
+            TwitterMQTTPublisher.init("tcp://127.0.0.1", "1883");
+        } catch(InterruptedException e) {
+            Log.getLog().warn(e.getMessage());
         }
         
         // init the http server

@@ -678,10 +678,10 @@ public class DAO {
             
             // teach the classifier
             Classifier.learnPhrase(mw.t.getText());
-            (new TwitterMQTTPublisher()).publish(mw.t);
+            TwitterMQTTPublisher.publisher.publish(mw.t);
         } catch (IOException e) {
         	Log.getLog().warn(e);
-        } catch (InterruptedException e) {
+        } catch (NullPointerException e) {
             Log.getLog().warn(e);
         }
         return true;
