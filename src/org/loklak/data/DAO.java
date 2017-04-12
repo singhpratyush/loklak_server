@@ -678,6 +678,7 @@ public class DAO {
             
             // teach the classifier
             Classifier.learnPhrase(mw.t.getText());
+            // publish to Mosquitto
             TwitterMQTTPublisher.publisher.publish(mw.t);
         } catch (IOException e) {
         	Log.getLog().warn(e);

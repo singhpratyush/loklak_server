@@ -1,6 +1,6 @@
 package org.loklak.data;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.CountDownLatch;
 import net.sf.xenqtt.client.AsyncClientListener;
@@ -22,8 +22,6 @@ public abstract class AbstractMQTTPublisher {
     AbstractMQTTPublisher(String host, String port) throws InterruptedException {
 
         String url = host + ":" + port;
-        final CountDownLatch connectLatch = new CountDownLatch(1);
-        final AtomicReference<ConnectReturnCode> connectReturnCode = new AtomicReference<ConnectReturnCode>();
 
         AsyncClientListener listener = new AsyncClientListener() {
 
@@ -39,7 +37,6 @@ public abstract class AbstractMQTTPublisher {
                 } else {
                     Log.getLog().info("Disconnected from the broker.");
                 }
-
                 if (reconnecting) {
                     Log.getLog().info("Attempting to reconnect to the broker.");
                 }
@@ -47,8 +44,7 @@ public abstract class AbstractMQTTPublisher {
 
             @Override
             public void connected(MqttClient client, ConnectReturnCode returnCode) {
-                connectReturnCode.set(returnCode);
-                connectLatch.countDown();
+                Log.getLog().info("Connected to client " + client + " with return code " + returnCode);
             }
 
             @Override
@@ -67,19 +63,7 @@ public abstract class AbstractMQTTPublisher {
 
         this.mqttClient = new AsyncMqttClient(url, listener, 5);
         this.mqttClient.connect("loklak_server", false);
-
-        // Wait to connect
-        connectLatch.wait();
-        ConnectReturnCode returnCode = connectReturnCode.get();
-
-        // Verify return code
-        if (returnCode == null || returnCode != ConnectReturnCode.ACCEPTED) {
-            // The broker bounced us. We are done.
-            Log.getLog().warn("The broker rejected our attempt to connect. Reason: " + returnCode);
-        }
-
         this.status = true;
-
     }
 
     AbstractMQTTPublisher () throws InterruptedException {
@@ -95,11 +79,16 @@ public abstract class AbstractMQTTPublisher {
     }
 
     public void publish(MessageEntry message) {
-        ArrayList<String> channels = this.getChannels(message);
+        List<String> channels = this.getChannels(message);
         for(String channel: channels) {
-            this.mqttClient.publish(new PublishMessage(channel, QoS.AT_MOST_ONCE, message.toJSON().toString()));
+            this.publish_real(channel, message.toJSON().toString());
         }
+        Log.getLog().info("Published message " + message);
     }
 
-    public abstract ArrayList<String> getChannels(MessageEntry m);
+    public void publish_real(String channel, String message) {
+        this.mqttClient.publish(new PublishMessage(channel, QoS.AT_MOST_ONCE, message));
+    }
+
+    public abstract List<String> getChannels(MessageEntry m);
 }

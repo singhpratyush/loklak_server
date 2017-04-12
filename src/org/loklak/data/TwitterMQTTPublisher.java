@@ -1,6 +1,7 @@
 package org.loklak.data;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.loklak.objects.MessageEntry;
 
 public class TwitterMQTTPublisher extends AbstractMQTTPublisher {
@@ -16,8 +17,8 @@ public class TwitterMQTTPublisher extends AbstractMQTTPublisher {
     }
 
     @Override
-    public ArrayList<String> getChannels(MessageEntry m) {
-        ArrayList<String> channels = new ArrayList<>();
+    public List<String> getChannels(MessageEntry m) {
+        List<String> channels = new ArrayList<>();
         channels.add("twitter");
         return channels;
     }
