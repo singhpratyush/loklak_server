@@ -361,7 +361,9 @@ public class TwitterScraper {
             }
             if (input.indexOf("AdaptiveMedia-videoContainer") > 0) {
                 String tweetUrl = props.get("tweetstatusurl").value;
+                long start = System.currentTimeMillis();
                 String[] videoUrls = fetchTwitterVideos(tweetUrl);
+                DAO.log("Collected videos in " + (System.currentTimeMillis() - start) + "ms");
                 Collections.addAll(videos, videoUrls);
             }
             if ((p = input.indexOf("class=\"Tweet-geo")) > 0) {
