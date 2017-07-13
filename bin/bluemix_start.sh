@@ -22,7 +22,7 @@ else
     echo -n "-----> Installing ${JAVA_DIST} build (to .jdk8)....."
     mkdir "$PWD/.jdk8"
     cd "$PWD/.jdk8"
-    curl --max-time 180 --location "$JDK8_URL" | tar xz
+    curl --location "$JDK8_URL" | tar xz
     cd "$PWD"
     echo "Done!"
   fi
