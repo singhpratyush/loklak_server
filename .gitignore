@@ -20,3 +20,7 @@ dist/loklak.jar
 
 /docs/_build
 .DS_Store
+
+api_key.py
+client-secret.json
+credentials.tar.gz
