@@ -10,6 +10,8 @@ spec:
       labels:
         app: server
     spec:
+      nodeSelector:
+        server: primary
       containers:
       - name: server
         image: singhpratyush/loklak_server:development
@@ -27,6 +29,5 @@ spec:
           protocol: TCP
       volumes:
       - name: data-index
-        gcePersistentDisk:
-          pdName: data-index-disk
-          fsType: ext4
+        persistentVolumeClaim:
+          claimName: server-data-claim
