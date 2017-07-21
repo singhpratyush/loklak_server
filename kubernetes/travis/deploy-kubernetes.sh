@@ -2,9 +2,15 @@
 
 set -e
 
+if [ -z $DOCKER_USERNAME ]; then
+    echo "No docker configuration found for Travis"
+    echo "You can set environment variables DOCKER_USERNAME and DOCKER_PASSWORD to automatically update them"
+    exit 0;
+fi
+
 GC_PROJECT=loklak-201451036
 GC_CLUSTER=loklak-cluster
-TAG=gcr.io/$GC_PROJECT/loklak:$TRAVIS_COMMIT
+TAG=$DOCKER_USERNAME/loklak_server:$TRAVIS_COMMIT
 
 # Take care of encrypted gz
 echo ">>> Decrypting credentials"
@@ -34,7 +40,8 @@ gcloud container clusters get-credentials $GC_CLUSTER
 
 echo ">>> Tagging and pushing image $TAG"
 docker tag loklak_server $TAG
-gcloud docker -- push $TAG
+docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+docker push $TAG
 
 echo ">>> Updating Kubernetes deployment"
 kubectl set image deployment/server --namespace=web server=$TAG
