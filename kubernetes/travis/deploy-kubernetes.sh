@@ -11,7 +11,7 @@ echo ">>> Decrypting credentials"
 openssl aes-256-cbc -K $encrypted_bc7e535763c0_key -iv $encrypted_bc7e535763c0_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
 tar -xzf credentials.tar.gz
 
-echo ">>> Removing onselete files"
+echo ">>> Removing obselete files"
 sudo rm -f /usr/bin/git-credential-gcloud.sh
 sudo rm -f /usr/bin/bq
 sudo rm -f /usr/bin/gsutil
@@ -32,10 +32,9 @@ export GOOGLE_APPLICATION_CREDENTIALS=client-secret.json
 gcloud config set project $GC_PROJECT
 gcloud container clusters get-credentials $GC_CLUSTER
 
-
 echo ">>> Tagging and pushing image $TAG"
 docker tag loklak_server $TAG
 gcloud docker -- push $TAG
 
 echo ">>> Updating Kubernetes deployment"
-kubectl set image deployment/loklak --namespace=default loklak=$TAG
+kubectl set image deployment/server --namespace=web server=$TAG
