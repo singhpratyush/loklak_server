@@ -1,0 +1,28 @@
+# Main deployment for API server
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: server
+  namespace: web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      nodeSelector:
+        server: primary
+      containers:
+      - name: server
+        image: loklak/loklak_server:latest-kubernetes-master
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        volumeMounts:
+          - name: dump
+            mountPath: /loklak_server/data
+      volumes:
+        - name: dump
+          persistentVolumeClaim:
+            claimName: dump
