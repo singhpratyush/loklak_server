@@ -19,6 +19,18 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/status.json
+            port: 80
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/status.json
+            port: 80
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
         volumeMounts:
           - name: dump
             mountPath: /loklak_server/data

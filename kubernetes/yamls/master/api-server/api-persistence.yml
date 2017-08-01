@@ -8,6 +8,8 @@ spec:
     storage: 100Gi
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: slow
   gcePersistentDisk:
     pdName: "data-dump-disk"
     fsType: "ext4"
