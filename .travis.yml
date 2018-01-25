@@ -9,11 +9,12 @@ env:
 addons:
   ssh_known_hosts: 104.155.231.103
 install:
-- pip install --user flake8
+- pip install --user -r requirements.txt
 script:
 - gradle build -x checkstyleTest -x checkstyleMain
 - bin/start.sh
 - flake8 bin
+- coala --ci
 - docker build -t loklak_server .
 - docker images
 - docker run loklak_server bash /loklak_server/bin/start.sh -I
